@@ -54,4 +54,25 @@
         <artifactId>reflections</artifactId>
       </dependency>
     </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+         <groupId>org.jsonschema2pojo</groupId>
+         <artifactId>jsonschema2pojo-maven-plugin</artifactId>
+         <version>0.4.15</version>
+         <configuration>
+           <sourceDirectory>${basedir}/src/test/jsonschema</sourceDirectory>
+           <outputDirectory>${project.build.directory}/generated-test-sources/jsonschema</outputDirectory>
+         </configuration>
+         <executions>
+           <execution>
+             <phase>generate-test-sources</phase>
+             <goals>
+               <goal>generate</goal>
+             </goals>
+           </execution>
+         </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

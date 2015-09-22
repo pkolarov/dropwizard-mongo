@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
+import org.jongo.MongoCursor;
 
 import com.mongodb.DBRef;
 
@@ -48,7 +49,7 @@ public abstract class BasicDao<T, K> {
     return collection;
   }
   
-  public DBRef createRef( String id ) {
+  public DBRef createRef( K id ) {
     return new com.mongodb.DBRef(jongo.getDatabase(), collectionName, id);
   }
 
@@ -62,21 +63,28 @@ public abstract class BasicDao<T, K> {
       .as(type));
   }
 
-  public Iterable<T> findPage( Pagination pagination ) {
-    return getCollection()
-      .find()
-      .skip(pagination.getOffset())
-      .limit(pagination.getLimit())
-      .as(entityType);
+  public MongoCursor<T> findPage( Pagination<K> pagination ) {
+    return findPage(pagination.getLastId(), pagination.getPageSize(), entityType);
+
   }
 
-  public Iterable<T> findPage( int page, int pageSize ) {
-    return findPage(page, pageSize, entityType);
+  public MongoCursor<T> findPage( K lastId, int pageSize ) {
+    return findPage(lastId, pageSize, entityType);
   }
 
-  public <T> Iterable<T> findPage( int page, int pageSize, Class<T> type ) {
-    return getCollection().find().skip(page * pageSize).limit(pageSize).as(type);
-  }
+  public <T> MongoCursor<T> findPage( K lastId, int pageSize, Class<T> type ) {
+    if( lastId == null ) {
+      return getCollection()
+        .find()
+        .limit(pageSize)
+        .as(type);
+    }
+    else {
+      return getCollection()
+        .find("{_id: {$gt: #}}", lastId)
+        .limit(pageSize)
+        .as(type);
+    }  }
 
   public void save( T t ) {
     getCollection().save(t);

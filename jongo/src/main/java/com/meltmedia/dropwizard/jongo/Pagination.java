@@ -3,28 +3,28 @@ package com.meltmedia.dropwizard.jongo;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.QueryParam;
 
-public class Pagination {
-  private int offset = 0;
-  private int limit = 100;
+public class Pagination<K> {
+  private K lastId;
+  private int pageSize = 100;
 
-  public Pagination( @QueryParam("offset") @DefaultValue("0") int offset, @QueryParam("limit") @DefaultValue("100") int limit ) {
-    this.offset = offset;
-    this.limit = limit;
+  public Pagination( @QueryParam("lastId") K lastId, @QueryParam("pageSize") @DefaultValue("100") int pageSize ) {
+    this.lastId = lastId;
+    this.pageSize = pageSize;
   }
 
-  public int getOffset() {
-    return offset;
+  public K getLastId() {
+    return lastId;
   }
 
-  public void setOffset( int offset ) {
-    this.offset = offset;
+  public void setLastId( K lastId ) {
+    this.lastId = lastId;
   }
 
-  public int getLimit() {
-    return limit;
+  public int getPageSize() {
+    return pageSize;
   }
 
-  public void setLimit( int limit ) {
-    this.limit = limit;
+  public void setPageSize( int pageSize ) {
+    this.pageSize = pageSize;
   }
 }
