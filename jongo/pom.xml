@@ -63,6 +63,7 @@
          <configuration>
            <sourceDirectory>${basedir}/src/test/jsonschema</sourceDirectory>
            <outputDirectory>${project.build.directory}/generated-test-sources/jsonschema</outputDirectory>
+           <addCompileSourceRoot>false</addCompileSourceRoot>
          </configuration>
          <executions>
            <execution>
@@ -73,6 +74,24 @@
            </execution>
          </executions>
       </plugin>
+    <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>build-helper-maven-plugin</artifactId>
+      <executions>
+        <execution>
+          <id>add-test-sources</id>
+          <phase>generate-test-sources</phase>
+          <goals>
+            <goal>add-test-source</goal>
+          </goals>
+          <configuration>
+            <sources>
+              <source>${project.build.directory}/generated-test-sources/jsonschema</source>
+            </sources>
+          </configuration>
+        </execution>
+      </executions>
+    </plugin>
     </plugins>
   </build>
 </project>
