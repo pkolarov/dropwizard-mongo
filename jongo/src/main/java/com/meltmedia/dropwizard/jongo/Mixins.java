@@ -1,5 +1,6 @@
 package com.meltmedia.dropwizard.jongo;
 
+import org.jongo.marshall.jackson.oid.Id;
 import org.jongo.marshall.jackson.oid.ObjectId;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,15 +24,15 @@ public class Mixins {
   
   public static abstract class ObjectIdMixin {
     @ObjectId
-    @JsonProperty("_id")
-    public String id;
+    @Id
+    String id;
 
     @ObjectId
-    @JsonProperty("_id")
+    @Id
     public abstract String getId();
 
     @ObjectId
-    @JsonProperty("_id")
+    @Id
     public abstract void setId( String id );    
   }
 }

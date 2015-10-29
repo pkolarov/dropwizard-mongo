@@ -11,7 +11,9 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
+import com.meltmedia.dropwizard.jongo.junit.JongoRule.Builder;
 import com.mongodb.MongoClient;
 
 /**
@@ -29,7 +31,7 @@ public class JongoRule
   public static class Builder {
     private Supplier<MongoClient> mongoClient;
     private String dbName;
-    private List<Consumer<JacksonMapper.Builder>> configurators = Lists.newArrayList(); 
+    private List<Consumer<JacksonMapper.Builder>> configurators = Lists.newArrayList();
 
     public Builder withMongoClient(Supplier<MongoClient> mongoClient) {
       this.mongoClient = mongoClient;
@@ -48,6 +50,14 @@ public class JongoRule
     
     public JongoRule build() {
       return new JongoRule( mongoClient, dbName, configurators );
+    }
+
+    @SuppressWarnings("serial")
+    public Builder addSimpleModule( Consumer<SimpleModule> mappings ) {
+      configurators.add((builder)->builder.registerModule(new SimpleModule() {{
+        mappings.accept(this);
+      }}));
+      return this;
     }
   }
   

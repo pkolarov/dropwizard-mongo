@@ -1,6 +1,9 @@
 package com.meltmedia.dropwizard.jongo;
 
 import java.util.Optional;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import org.jongo.Jongo;
 import org.jongo.MongoCollection;
@@ -31,18 +34,20 @@ import com.mongodb.DBRef;
  * @param <T> the entity type
  * @param <K> the id type
  */
-public abstract class BasicDao<T, K> {
+public class BasicDao<T, K> {
   public Class<T> entityType;
   public Class<K> keyType;
   protected Jongo jongo;
   protected MongoCollection collection;
   protected String collectionName;
 
-  protected BasicDao( Jongo jongo, Class<T> entityType, String collectionName ) {
+  public BasicDao( Jongo jongo, Class<T> entityType, Function<T, K> idGetter, BiConsumer<T, K> idSetter, String collectionName ) {
     this.jongo = jongo;
     this.collectionName = collectionName;
     this.collection = jongo.getCollection(collectionName);
     this.entityType = entityType;
+    this.idSetter = idSetter;
+    this.idGetter = idGetter;
   }
 
   public MongoCollection getCollection() {
@@ -88,5 +93,24 @@ public abstract class BasicDao<T, K> {
 
   public void save( T t ) {
     getCollection().save(t);
+  }
+  
+  Function<T, K> idGetter;
+  BiConsumer<T, K> idSetter;
+
+  public T upsertById( T template ) {
+    K id = idGetter.apply(template);
+    try {
+      idSetter.accept(template, null);
+      return getCollection().findAndModify("{_id: #}", id)
+        .upsert()
+        .returnNew()
+        .with("{$setOnInsert: #}", template)
+        .with("{$set: #}", template)
+        .as(entityType);
+    }
+    finally {
+      idSetter.accept(template, id);
+    }
   }
 }
