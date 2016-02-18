@@ -141,12 +141,13 @@ public class MongoBundle<C extends Configuration> implements ConfiguredBundle<C>
       }
 
       // build the options.
-      MongoClientOptions options = new MongoClientOptions.Builder().writeConcern(writeConcern(configuration.getWriteConcern())).build();
+      MongoClientOptions options = new MongoClientOptions.Builder().writeConcern(writeConcern(configuration.getWriteConcern()))
+              .sslEnabled(configuration.isSsl()).build();
 
       log.info("Mongo database is {}", configuration.getDatabase());
 
       return new MongoClient(servers, credentials, options);
-    } catch( UnknownHostException e ) {
+    } catch( Exception e ) {
       throw new RuntimeException("Could not configure MongoDB client.", e);
     }    
   }

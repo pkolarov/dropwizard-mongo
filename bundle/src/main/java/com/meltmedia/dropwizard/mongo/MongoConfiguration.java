@@ -47,6 +47,16 @@ public class MongoConfiguration {
   protected String writeConcern = "ACKNOWLEDGED";
   protected boolean enabled = true;
 
+  public boolean isSsl() {
+    return ssl;
+  }
+
+  public void setSsl(boolean ssl) {
+    this.ssl = ssl;
+  }
+
+  protected boolean ssl = false;
+
   public List<Server> getSeeds() {
     return seeds;
   }
